@@ -93,4 +93,12 @@ RUN cd /tmp && \
     unzip terraform_${TERRAFORM_VERSION}_linux_amd64.zip -d /usr/bin && \
     rm -rf /tmp/*
 
+# 
+# Install Heroku
+# 
+RUN wget -qO- https://cli-assets.heroku.com/install-ubuntu.sh | sh
+
+# 
+# Install Pivotal Tracker script
+# 
 RUN gem install tracker-git
