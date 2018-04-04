@@ -1,4 +1,4 @@
-FROM node:6.10.3
+FROM node:8.10
 
 ENV npm_config_loglevel warn
 
@@ -9,8 +9,8 @@ ENV npm_config_loglevel warn
 # skip installing gem documentation
 RUN mkdir -p /usr/local/etc \
 	&& { \
-		echo 'install: --no-document'; \
-		echo 'update: --no-document'; \
+	echo 'install: --no-document'; \
+	echo 'update: --no-document'; \
 	} >> /usr/local/etc/gemrc
 
 ENV RUBY_MAJOR 2.4
@@ -23,10 +23,10 @@ ENV RUBYGEMS_VERSION 2.6.12
 RUN set -ex \
 	\
 	&& buildDeps=' \
-		bison \
-		dpkg-dev \
-		libgdbm-dev \
-		ruby \
+	bison \
+	dpkg-dev \
+	libgdbm-dev \
+	ruby \
 	' \
 	&& apt-get update \
 	&& apt-get install -y --no-install-recommends $buildDeps \
@@ -41,21 +41,21 @@ RUN set -ex \
 	\
 	&& cd /usr/src/ruby \
 	\
-# hack in "ENABLE_PATH_CHECK" disabling to suppress:
-#   warning: Insecure world writable dir
+	# hack in "ENABLE_PATH_CHECK" disabling to suppress:
+	#   warning: Insecure world writable dir
 	&& { \
-		echo '#define ENABLE_PATH_CHECK 0'; \
-		echo; \
-		cat file.c; \
+	echo '#define ENABLE_PATH_CHECK 0'; \
+	echo; \
+	cat file.c; \
 	} > file.c.new \
 	&& mv file.c.new file.c \
 	\
 	&& autoconf \
 	&& gnuArch="$(dpkg-architecture --query DEB_BUILD_GNU_TYPE)" \
 	&& ./configure \
-		--build="$gnuArch" \
-		--disable-install-doc \
-		--enable-shared \
+	--build="$gnuArch" \
+	--disable-install-doc \
+	--enable-shared \
 	&& make -j "$(nproc)" \
 	&& make install \
 	\
@@ -89,9 +89,9 @@ ENV TERRAFORM_VERSION=0.11.3
 RUN apt-get update && apt-get install -y unzip jq
 
 RUN cd /tmp && \
-    wget https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip && \
-    unzip terraform_${TERRAFORM_VERSION}_linux_amd64.zip -d /usr/bin && \
-    rm -rf /tmp/*
+	wget https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip && \
+	unzip terraform_${TERRAFORM_VERSION}_linux_amd64.zip -d /usr/bin && \
+	rm -rf /tmp/*
 
 # 
 # Install Heroku
