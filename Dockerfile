@@ -81,7 +81,7 @@ RUN mkdir -p "$GEM_HOME" "$BUNDLE_BIN" \
 	&& chmod 777 "$GEM_HOME" "$BUNDLE_BIN"
 
 #
-# https://github.com/docker-library/python/blob/4d640edc8df64b9cf050904f60ac03765e05d3f6/2.7/jessie/Dockerfile
+# https://github.com/docker-library/python/blob/ba5711fb564133bf9c8b870b431682a4db427219/3.7-rc/stretch/Dockerfile
 #
 
 # ensure local python is preferred over distribution python
@@ -90,8 +90,6 @@ ENV PATH /usr/local/bin:$PATH
 # http://bugs.python.org/issue19846
 # > At the moment, setting "LANG=C" on a Linux system *fundamentally breaks Python 3*, and that's not OK.
 ENV LANG C.UTF-8
-# https://github.com/docker-library/python/issues/147
-ENV PYTHONIOENCODING UTF-8
 
 # runtime dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -99,8 +97,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 	tk \
 	&& rm -rf /var/lib/apt/lists/*
 
-ENV GPG_KEY C01E1CAD5EA2C4F0B8E3571504C367C218ADD4FF
-ENV PYTHON_VERSION 2.7.15
+ENV GPG_KEY 0D96DF4D4110E5C43FBFB17F2D347EA6AA65421D
+ENV PYTHON_VERSION 3.7.0b4
 
 RUN set -ex \
 	&& buildDeps=' \
@@ -124,8 +122,11 @@ RUN set -ex \
 	&& gnuArch="$(dpkg-architecture --query DEB_BUILD_GNU_TYPE)" \
 	&& ./configure \
 	--build="$gnuArch" \
+	--enable-loadable-sqlite-extensions \
 	--enable-shared \
-	--enable-unicode=ucs4 \
+	--with-system-expat \
+	--with-system-ffi \
+	--without-ensurepip \
 	&& make -j "$(nproc)" \
 	&& make install \
 	&& ldconfig \
@@ -139,6 +140,13 @@ RUN set -ex \
 	\( -type f -a \( -name '*.pyc' -o -name '*.pyo' \) \) \
 	\) -exec rm -rf '{}' + \
 	&& rm -rf /usr/src/python
+
+# make some useful symlinks that are expected to exist
+RUN cd /usr/local/bin \
+	&& ln -s idle3 idle \
+	&& ln -s pydoc3 pydoc \
+	&& ln -s python3 python \
+	&& ln -s python3-config python-config
 
 # if this is called "PIP_VERSION", pip explodes with "ValueError: invalid truth value '<VERSION>'"
 ENV PYTHON_PIP_VERSION 10.0.1
@@ -161,9 +169,6 @@ RUN set -ex; \
 	\( -type f -a \( -name '*.pyc' -o -name '*.pyo' \) \) \
 	\) -exec rm -rf '{}' +; \
 	rm -f get-pip.py
-
-# install "virtualenv", since the vast majority of users of this image will want it
-RUN pip install --no-cache-dir virtualenv
 
 #
 # https://github.com/broadinstitute/docker-terraform/blob/master/Dockerfile
@@ -189,9 +194,3 @@ RUN wget -qO- https://cli-assets.heroku.com/install-ubuntu.sh | sh
 RUN gem install tracker-git
 
 RUN apt-get update && apt-get install docker.io -y
-
-#
-# Install aws sam
-#
-
-RUN pip install aws-sam-cli
