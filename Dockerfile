@@ -1,4 +1,4 @@
-FROM node:8.10
+FROM node:10.12.0
 
 ENV npm_config_loglevel warn
 
