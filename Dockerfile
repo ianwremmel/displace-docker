@@ -93,7 +93,7 @@ RUN apt-get update && apt-get install -y openjdk-7-jre
 
 ENV TERRAFORM_VERSION=0.11.9
 
-RUN apt-get update && apt-get install -y unzip jq
+RUN apt-get update && apt-get install -y jq unzip rsync
 
 RUN cd /tmp && \
 	wget https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip && \
