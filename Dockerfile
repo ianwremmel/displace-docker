@@ -91,7 +91,7 @@ RUN apt-get update && apt-get install -y openjdk-7-jre
 # https://github.com/broadinstitute/docker-terraform/blob/master/Dockerfile
 #
 
-ENV TERRAFORM_VERSION=0.11.9
+ENV TERRAFORM_VERSION=0.11.11
 
 RUN apt-get update && apt-get install -y jq unzip rsync
 
